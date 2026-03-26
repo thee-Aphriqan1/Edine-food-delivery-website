@@ -1,9 +1,7 @@
 import { useState } from "react";
-
+import { Link } from "react-router-dom";
 import "/src/App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-// import React from "react";
-// import {} from "react-dom";
 
 function RestaurantSignUpForm() {
   const [restaurantName, setRestaurantName] = useState("");
@@ -11,29 +9,88 @@ function RestaurantSignUpForm() {
   const [businessEmail, setBusinessEmail] = useState("");
   const [businessPhoneNumber, setbusinessPhoneNumber] = useState("");
   const [businessPassword, setBusinessPassword] = useState("");
-  const [privacyTerms, setPrivacyTerms] = useState("");
+  const [privacyTerms, setPrivacyTerms] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const submitForm = (e: { preventDefault: () => void }) => {
+  // Validation function to check if all required fields are filled the trim function is meant for removing spaces
+  const isFormValid = () => {
+    return (
+      restaurantName.trim() !== "" &&
+      applicantFullName.trim() !== "" &&
+      businessEmail.trim() !== "" &&
+      businessPhoneNumber.trim() !== "" &&
+      businessPassword.trim() !== "" &&
+      confirmPassword.trim() !== "" &&
+      businessPassword === confirmPassword &&
+      privacyTerms
+    );
+  };
+
+  const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(
+    //  we create an object to put the business infomation in it helps in data submission
+    const businessInfo = {
       businessEmail,
       businessPassword,
       applicantFullName,
-      privacyTerms,
       restaurantName,
-    );
+      confirmPassword,
+    };
+    // this is a post request we are sending data to the backend to create a new restaurant account
+    try {
+      const response = await fetch("http://localhost:5000/restaurants", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(businessInfo),
+      });
+      //  This  outputs the data sent to the server
+      const result = await response.json();
+      // Show success message and update form state
+      setSuccessMessage("Sign up successful! Welcome to Edine.");
+      setIsSubmitted(true);
+      // Clear the message after 5 seconds
+      setTimeout(() => setSuccessMessage(""), 5000);
+      return result;
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
     <>
-      <div className="container w-50 " id="SignUp">
+      <div
+        className="container w-50 "
+        d-flex
+        justify-content-center
+        align-items-center
+        text-align-center
+        id="SignUp"
+      >
         <form onSubmit={submitForm} method="post" className="mt-5 rounded-3">
           <div className="d-flex justify-content-center">
             <h3 className="mb-3" id="joinEdine">
               Join Edine
             </h3>
           </div>
+
+          {successMessage && (
+            <div
+              className="alert alert-success alert-dismissible fade show"
+              role="alert"
+            >
+              {successMessage}
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => setSuccessMessage("")}
+                title="Close alert"
+              ></button>
+            </div>
+          )}
 
           <div className="form-floating mb-3">
             <input
@@ -42,6 +99,7 @@ function RestaurantSignUpForm() {
               id="restaurantName"
               name="restaurantName"
               placeholder="Enter Restaurant Name"
+              max="15"
               value={restaurantName}
               onChange={(e) => setRestaurantName(e.target.value)}
             />
@@ -56,6 +114,7 @@ function RestaurantSignUpForm() {
               id="applicantFullName"
               name="applicantFullName"
               placeholder="Enter FullName"
+              max="20"
               value={applicantFullName}
               onChange={(e) => setApplicantFullName(e.target.value)}
             />
@@ -86,6 +145,7 @@ function RestaurantSignUpForm() {
               id="businessPhoneNumber"
               name="businessPhoneNumber"
               placeholder="Enter Phone Number"
+              max="10"
               value={businessPhoneNumber}
               onChange={(e) => setbusinessPhoneNumber(e.target.value)}
             />
@@ -100,6 +160,8 @@ function RestaurantSignUpForm() {
               id="businessPassword"
               name="businessPassword"
               placeholder="Enter Your Password"
+              min="8"
+              max="20"
               value={businessPassword}
               onChange={(e) => setBusinessPassword(e.target.value)}
             />
@@ -115,6 +177,8 @@ function RestaurantSignUpForm() {
               id="confirmPassword"
               name="confirmPassword"
               placeholder="Confirm Password"
+              min="8"
+              max="20"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
@@ -132,8 +196,9 @@ function RestaurantSignUpForm() {
               name="privacyTerms"
               id="legalTerms"
               className="form-check-input"
-              value={privacyTerms}
-              onChange={(e) => setPrivacyTerms(e.target.value)}
+              checked={privacyTerms}
+              onChange={(e) => setPrivacyTerms(e.target.checked)}
+              disabled={isSubmitted}
             />
             <label
               htmlFor="legalTerms"
@@ -145,9 +210,6 @@ function RestaurantSignUpForm() {
                 Terms & privacy Terms
               </a>
             </label>
-            {/* <span>
-              <p className="">I agree to the privacy Terms</p>
-            </span> */}
           </div>
 
           <div className="mb-3 d-flex justify-content-center">
@@ -155,20 +217,18 @@ function RestaurantSignUpForm() {
               type="submit"
               className="btn btn-primary w-75"
               id="signUpBtn"
+              disabled={!isFormValid() || isSubmitted}
             >
-              Sign Up
+              {isSubmitted ? "Account Created!" : "Sign Up"}
             </button>
-            {/* <button type="reset" className="btn btn-secondary w-25">
-              Cancel
-            </button> */}
           </div>
 
           <div className="mb-3 d-flex justify-content-center text-align-center">
             <p>
               Already have an account ?
-              <a href="#" id="Login">
+              <Link to="/" id="Login">
                 Log In
-              </a>
+              </Link>
             </p>
           </div>
         </form>

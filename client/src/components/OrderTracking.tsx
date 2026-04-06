@@ -28,7 +28,7 @@ const mockOrders: Order[] = [
     id: '1',
     orderNumber: 'ORD-2026-001',
     items: ['Margherita Pizza', 'Caesar Salad', 'Coca Cola'],
-    total: 45.99,
+    total: 4599,
     status: 'out_for_delivery',
     estimatedDelivery: '20 mins',
     deliveryAddress: '123 Main St, Apt 4B',
@@ -39,7 +39,7 @@ const mockOrders: Order[] = [
     id: '2',
     orderNumber: 'ORD-2026-002',
     items: ['Burger Combo', 'Fries', 'Milkshake'],
-    total: 32.50,
+    total: 3250,
     status: 'delivered',
     estimatedDelivery: 'Delivered',
     deliveryAddress: '456 Oak Ave, Suite 200',
@@ -50,7 +50,7 @@ const mockOrders: Order[] = [
     id: '3',
     orderNumber: 'ORD-2026-003',
     items: ['Sushi Platter', 'Edamame', 'Green Tea'],
-    total: 58.75,
+    total: 5875,
     status: 'preparing',
     estimatedDelivery: '35 mins',
     deliveryAddress: '789 Pine Rd, Apt 10',
@@ -174,7 +174,7 @@ export default function OrderTracking() {
                     </span>
                   </div>
                   <p className="text-sm text-[#95A5A6] mb-2">{order.items.slice(0, 2).join(', ')}</p>
-                  <p className="text-sm font-semibold text-[#E74C3C]">${order.total.toFixed(2)}</p>
+                  <p className="text-sm font-semibold text-[#E74C3C]">KES {order.total.toLocaleString()}</p>
                 </button>
               ))}
             </div>
@@ -193,7 +193,7 @@ export default function OrderTracking() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-3xl font-bold text-[#E74C3C]">${selectedOrder.total.toFixed(2)}</p>
+                    <p className="text-3xl font-bold text-[#E74C3C]">KES {selectedOrder.total.toLocaleString()}</p>
                   </div>
                 </div>
               </div>
